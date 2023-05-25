@@ -1,0 +1,84 @@
+{% extends "airtime/base.html" %}
+
+{% block body %}
+
+<h3 class="m-4">All Airtime</h3>
+<div class="row">
+    <div class="col-12">
+        {%  if airtimes  %}
+        <div class="card bg-light ms-4 me-4 mb-4" >
+            <div class="card-header">
+              <i class="fa-solid fa-list-check fa-lg"></i> Sent Airtimes
+            </div>
+            <div class="card-body">
+             
+              <p class="card-text">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Airtime Number</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {%  for airtime in airtimes  %}
+                                <tr>
+                                    <td>  {{ airtime.airtime_number }}  </td>
+                                    <td>  {{ airtime.phone_number }}</td>
+                                    <td>  {{ airtime.amount }} </td>
+                                    <td>  {{ airtime.username }} </td>
+                                    <td> 
+                                    <button type="button" class="btn btn-success me-1" href="{% url 'view_airtime' airtime.id %}" 
+                                    data-bs-toggle="modal" data-bs-target="#myModal{{airtime.id}}">
+                                    <i class="fa-solid fa-circle-info fa-lg"></i>
+                                  </button>  
+
+                                  <!-- Modal -View Airtime component -->
+                                  <div class="modal" id="myModal{{airtime.id}}" tabindex="-1" aria-labelledby="myModalLabel1"
+                                  aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title">
+                                            Airtime to : {{ airtime.phone_number }}
+                                          </h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true"></span>
+                                          </button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <ul class="list-unstyled">
+                                            <li>Airtime Number: <strong> {{ airtime.phone_number }} </strong></li>
+                                            <li>Airtime Amount: <strong> {{ airtime.amount }} </strong></li>
+                                            <li>Username: <strong> {{ airtime.username }} </strong></li>
+                                          </ul>
+                                        </div>
+                                        <div class="modal-footer">
+                                      
+                                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+              </p>
+            </div>
+          </div>
+        {%  else  %}
+            <h5 class="alert alert-primary ms-4 me-4"> No Airtime found </h5>
+        {%  endif  %}
+      
+    </div>
+</div>
+
+{% endblock %}
