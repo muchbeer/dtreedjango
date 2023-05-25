@@ -33,10 +33,7 @@
                                     <td>  {{ airtime.amount }} </td>
                                     <td>  {{ airtime.username }} </td>
                                     <td> 
-                                    <button type="button" class="btn btn-success me-1" href="{% url 'view_airtime' airtime.id %}" 
-                                    data-bs-toggle="modal" data-bs-target="#myModal{{airtime.id}}">
-                                    <i class="fa-solid fa-circle-info fa-lg"></i>
-                                  </button>  
+                                    
 
                                   <!-- Modal -View Airtime component -->
                                   <div class="modal" id="myModal{{airtime.id}}" tabindex="-1" aria-labelledby="myModalLabel1"

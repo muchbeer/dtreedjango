@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from .models import Airtime
 from .models import Gfamily
+from .models import DAirtime
 
 from .forms import AirtimeForm
 import openpyxl
@@ -41,7 +42,9 @@ def upload(request):
 
             g_families.append(Gfamily(name=g_names, age=g_ages, gender=g_gender))
             print(g_families)
-        return render(request, 'airtime/uploadexcel.html', {"g_families":g_families})
+        return render(request, 'airtime/uploadexcel.html', { 
+            'g_families':g_families,
+            'send_airtime' : DAirtime().send()})
 
 
 def add(request):
