@@ -5,7 +5,7 @@
 <h3 class="m-4">All Airtime</h3>
 <div class="row">
     <div class="col-12">
-        {%  if airtimes  %}
+        {%  if airtimesd  %}
         <div class="card bg-light ms-4 me-4 mb-4" >
             <div class="card-header">
               <i class="fa-solid fa-list-check fa-lg"></i> Sent Airtimes
@@ -20,29 +20,32 @@
                             <th scope="col">Airtime Number</th>
                             <th scope="col">Phone Number</th>
                             <th scope="col">Amount</th>
-                            <th scope="col">Username</th>
+                            <th scope="col">Issues</th>
                             <th scope="col">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                             
-                            {%  for airtime in airtimes  %}
+                            {%  for airtime in airtimesd  %}
                                 <tr>
                                     <td>  {{ airtime.airtime_number }}  </td>
-                                    <td>  {{ airtime.phone_number }}</td>
+                                    <td>  {{ airtime.phoneNumber }}</td>
                                     <td>  {{ airtime.amount }} </td>
-                                    <td>  {{ airtime.username }} </td>
+                                    <td>  {{ airtime.errorMessage }} </td>
                                     <td> 
                                     
-
+                                      <button type="button" class="btn btn-success me-1" 
+                                      href="{% url 'view_airtime' airtime.airtime_number %}" data-bs-toggle="modal"
+                                      data-bs-target="#dtree{{airtime.id}}">
+                                      <i class="fa-solid fa-circle-info fa-lg"></i></button>
                                   <!-- Modal -View Airtime component -->
-                                  <div class="modal" id="myModal{{airtime.id}}" tabindex="-1" aria-labelledby="myModalLabel1"
+                                  <div class="modal" id="dtree{{airtime.id}}" tabindex="-1" aria-labelledby="myModalLabel1"
                                   aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                       <div class="modal-content">
                                         <div class="modal-header">
                                           <h5 class="modal-title">
-                                            Airtime to : {{ airtime.phone_number }}
+                                            Airtime to : {{ airtime.phoneNumber }}
                                           </h5>
                                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true"></span>
@@ -50,9 +53,10 @@
                                         </div>
                                         <div class="modal-body">
                                           <ul class="list-unstyled">
-                                            <li>Airtime Number: <strong> {{ airtime.phone_number }} </strong></li>
+                                            <li>Airtime Number: <strong> {{ airtime.phoneNumber }} </strong></li>
                                             <li>Airtime Amount: <strong> {{ airtime.amount }} </strong></li>
-                                            <li>Username: <strong> {{ airtime.username }} </strong></li>
+                                            <li>Airtime Status: <strong> {{ airtime.status }} </strong></li>
+                                            <li>Airtime Error: <strong> {{ airtime.errorMessage }} </strong></li>
                                           </ul>
                                         </div>
                                         <div class="modal-footer">

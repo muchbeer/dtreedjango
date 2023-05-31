@@ -1,50 +1,110 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from .models import Airtime
-from .models import Gfamily
-from .models import DAirtime
-
+from random import randint
+from .models import Airtime, Gfamily, DAirtime, AirtimeReceive
 from .forms import AirtimeForm
 import openpyxl
+import json
+import requests
+from datetime import datetime
 
-# Create your views here.
+
 #define the http request that a user need to request 
-def index(request):
+"""def index(request):
     return render(request, 'airtime/index.html', {
         'airtimes' : Airtime.objects.all()
     })
 
+
 def view_airtime(request, id):
     airtime = Airtime.objects.get(pk=id)
+    return HttpResponseRedirect(reversed('index'))
+
+    """
+
+def index(request):
+    return render(request, 'airtime/index.html', {
+        'airtimesd' : AirtimeReceive.objects.all()
+    })
+
+
+def view_airtime(request, airtime_number):
+    airtime = AirtimeReceive.objects.get(pk=airtime_number)
     return HttpResponseRedirect(reversed('index'))
 
 def upload(request):
     if "GET" == request.method:    
         return render(request, 'airtime/uploadexcel.html', {})
     else:
-        excel_file = request.FILES["excel_file"]
+        #now = datetime.now()
+        #get_date_time = now.strftime("%d-%m-%Y %H:%M")
+
+        at_airtime_url = 'https://api.africastalking.com/version1/airtime/send'
+        dtree_request_body = {"username":"muchbeerapi"}
+        randomvalue = randint(10, 100000)
+        
+        at_headers = {"Content-Type": "application/json", "Accept":"application/json" , 
+                      "apiKey": "a2c23698253eafef3f02254cc9c414712ea0cad522ce1bd531ad126c353d959f", 
+                      "Idempotency-Key": "dtree{}".format(randomvalue)}
+        print(f"header printing2: {at_headers}")
+        
         # try put validations here to check extension or file size
 
-    
-        #alternative  wb = openpyxl.load_workbook(excel_file)
+        #excel load data function here
+        excel_file = request.FILES["excel_file"]
         wb = openpyxl.load_workbook(excel_file)
         
         worksheet = wb["Sheet1"]
         print(worksheet)
 
         g_families = []
+        checkValues = False
+        checkRetryValue = False
+        #dtree_airtime_sdk = DAirtime().send()
 
         # getting value from each cell in row
         for rows in range(2, worksheet.max_row + 1):
-            g_names = worksheet.cell(rows, 1).value
-            g_ages = worksheet.cell(rows, 2).value
-            g_gender = worksheet.cell(rows, 3).value
+            g_phoneNumber = worksheet.cell(rows, 1).value
+            g_amount = worksheet.cell(rows, 2).value
 
-            g_families.append(Gfamily(name=g_names, age=g_ages, gender=g_gender))
-            print(g_families)
+            at_object = Gfamily(phoneNumber= "+{}".format(g_phoneNumber), amount="TZS {}".format(g_amount))
+            at_object_to_dict = at_object.__dict__
+            
+            g_families.append(at_object_to_dict)
+            
+        dtree_request_body["recipients"] = g_families
+    
+        dtree_json_request = json.dumps(dtree_request_body, indent=4)
+        print(f"The true request is : {dtree_json_request}")
+
+        dtree_response = requests.post(at_airtime_url, data=dtree_json_request, headers=at_headers)
+        
+        dtree_response_dict = dtree_response.json()
+        airtime_sent_error_message = dtree_response_dict.get("errorMessage")
+        airtime_sent_response = dtree_response_dict.get("responses")
+        print(f"error message is : {airtime_sent_error_message}")
+        
+        
+        if(airtime_sent_error_message == "None"):
+            """ dtree_random_super = f"batch{randint(500,200000)}"
+            airtime_main = DAirtimeMain(dtree_date=get_date_time, total_amount= dtree_response_dict.get("totalAmount"), 
+                                        special_value=dtree_random_super    )
+            airtime_main.save()
+            """
+            checkValues = True
+
+            for airtime in airtime_sent_response:
+                airtime_received = AirtimeReceive(
+                phoneNumber=airtime.get("phoneNumber"), amount= airtime.get("amount"), errorMessage=airtime.get("errorMessage"),status=airtime.get("status"))
+                airtime_received.save()
+        else:
+            checkRetryValue = True
+
         return render(request, 'airtime/uploadexcel.html', { 
             'g_families':g_families,
-            'send_airtime' : DAirtime().send()})
+            'dtree_response_dict': checkValues,
+            'check_error': checkRetryValue})
+    
 
 
 def add(request):

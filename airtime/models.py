@@ -1,5 +1,6 @@
 from __future__ import print_function
 from django.db import models
+import json
 
 import africastalking
 
@@ -13,12 +14,45 @@ class Airtime(models.Model):
     def __str__(self):
         return f'Airtime: {self.phone_number}  {self.amount}'
     
-class Gfamily:
-    def __init__(self, name, age, gender):
-        self.name = name
-        self.age = age 
-        self.gender = gender
+"""class DAirtimeMain(models.Model):
+    dtree_number = models.AutoField(primary_key=True)
+    dtree_date = models.CharField(max_length=50)
+    total_amount = models.CharField(max_length=15)
+    special_value = models.CharField(max_length=15)
 
+    def __str__(self) -> str:
+        return super().__str__()
+        """
+    
+class AirtimeReceive(models.Model):
+    airtime_number = models.AutoField(primary_key=True)
+    phoneNumber = models.CharField(max_length=15)
+    amount = models.CharField(max_length=15) 
+    errorMessage = models.CharField(max_length=200)
+    status = models.CharField(max_length=20)
+    #responses = models.ForeignKey(DAirtimeMain, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f'Sent Airtime: {self.phoneNumber}  {self.amount}  {self.errorMessage}'
+    
+
+class Gfamily:
+    def __init__(self, phoneNumber, amount):
+        self.phoneNumber = phoneNumber
+        self.amount = amount 
+        
+    def to_json(self):
+        return json.dumps({
+            'phoneNumber': self.phoneNumber,
+            'amount': self.amount
+        })
+
+    @classmethod
+    def from_json(cls, s):
+        d = json.loads(s)
+        return cls(d['phoneNumber'], d['amount'])
+
+    
 class DAirtime:
     
     def __init__(self):
@@ -33,8 +67,8 @@ class DAirtime:
 
     def send(self):
 
-        phone_number = "255757022731"
-        amount = "500"
+        phone_number = "+255757022731"
+        amount = "199"
         currency_code = "TZS"
 
         try:
@@ -46,3 +80,4 @@ class DAirtime:
 
 if __name__ == '__main__':
     DAirtime().send()
+
