@@ -48,7 +48,7 @@ def upload(request):
                       "Idempotency-Key": "dtree{}".format(randomvalue)}
         print(f"header printing2: {at_headers}")
         
-        # try put validations here to check extension or file size
+        # try put validations here to check extension 
 
         #excel load data function here
         excel_file = request.FILES["excel_file"]
