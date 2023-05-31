@@ -36,8 +36,8 @@ def upload(request):
     if "GET" == request.method:    
         return render(request, 'airtime/uploadexcel.html', {})
     else:
-        #now = datetime.now()
-        #get_date_time = now.strftime("%d-%m-%Y %H:%M")
+        now = datetime.now()
+        get_date_time = now.strftime("%d-%m-%Y %H:%M")
 
         at_airtime_url = 'https://api.africastalking.com/version1/airtime/send'
         dtree_request_body = {"username":"muchbeerapi"}
